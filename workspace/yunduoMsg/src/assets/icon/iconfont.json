@@ -1,0 +1,16 @@
+{
+  "id": "1894421",
+  "name": "wanengod",
+  "font_family": "iconfont",
+  "css_prefix_text": "icon-wanengod",
+  "description": "",
+  "glyphs": [
+    {
+      "icon_id": "6822917",
+      "name": "qq",
+      "font_class": "qq",
+      "unicode": "e6ca",
+      "unicode_decimal": 59082
+    }
+  ]
+}
