@@ -115,7 +115,7 @@
             </el-form-item>
 
             <el-form-item class="login_button">
-              <el-button type="primary" class="login_menu"> 登录</el-button>
+              <el-button type="primary" @click="userLogin" class="login_menu"> 登录</el-button>
             </el-form-item>
 
           </el-form>
@@ -151,7 +151,7 @@
 </template>
 <script>
 // 引入api.js  好调用里面的接口
-import { requestLogin, setVfCode, addUser } from '../api/api'
+import { requestLogin, setVfCode } from '../api/api'
     export default {
     name: 'login',
     data() {
@@ -301,7 +301,7 @@ import { requestLogin, setVfCode, addUser } from '../api/api'
                             this.timer = null
                         }
                     }, 1000)
-                } else {
+                } else if (data.code === 410){
                     this.$confirm('当前手机号未注册 是否注册?', '提示', {
                         confirmButtonText: '确定',
                         cancelButtonText: '取消',
@@ -312,9 +312,56 @@ import { requestLogin, setVfCode, addUser } from '../api/api'
                     }).catch(() => {
                         // 不作任何操作
                     })
+                } else {
+                    this.$message({
+                        message: data.msg,
+                        type: 'error'
+                    })
                 }
             })
-        }
+        },
+        // 用户登录
+        userLogin () {
+            this.$refs.loginFormRef.validate(valid => {
+                if (valid) {
+                    // 验证通过 可以提交
+                    this.LoginLoading = true
+                    // 调用函数  传递参数 获取结果
+                    requestLogin(this.loginInfo).then(data => {
+                        if (data.code === 200) {
+                            this.avatar = data.data.avatar
+                            // 记住用户
+                            this.rememberUser()
+                            this.LoginLoading = false
+                            this.$message({
+                                message: data.msg,
+                                type: 'success'
+                            })
+                            // 登录成功 将token保存
+                            localStorage.setItem('token', data.data.token)
+                            // 保存用户信息
+                            localStorage.setItem('userId', data.data.id)
+                            // 保存权限信息
+                            localStorage.setItem('permission', data.data.permission)
+                            // 用vue路由跳转到后台主界面
+                            this.$router.push(
+                                {
+                                    path: '/home'
+                                }
+                            )
+                        } else {
+                            this.LoginLoading = false
+                            this.$message({
+                                message: data.msg,
+                                type: 'error'
+                            })
+                        }
+                    })
+                } else {
+                    return false
+                }
+            })
+        },
     }
     };
 </script>
