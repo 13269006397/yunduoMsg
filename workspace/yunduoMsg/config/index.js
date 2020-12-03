@@ -10,7 +10,22 @@ module.exports = {
     // Paths
     assetsSubDirectory: 'static',
     assetsPublicPath: '/',
-    proxyTable: {},
+
+
+    // 代理配置表，在这里可以配置特定的请求代理到对应的API接口
+    // 例如将'localhost:8080/api/xxx'代理到'www.example.com/api/xxx'
+    // 使用方法：https://vuejs-templates.github.io/webpack/proxy.html
+    proxyTable: {
+      '/api-user': {
+        target: 'http://localhost:9005/',
+        /* 允许跨域 */
+        changeOrigin: true,
+        ws: true,
+        pathRewrite: {
+          '^/api-user': '' // 实际请求去掉/api以空字符串代替
+        }
+      }
+    },
 
     // Various Dev Server settings
     host: 'localhost', // can be overwritten by process.env.HOST
