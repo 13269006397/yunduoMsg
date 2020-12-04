@@ -89,7 +89,7 @@
 
             <el-form-item class="el_form_item_rem">
               <el-checkbox v-model="checked" size="mini" class="rem_username">记住账号</el-checkbox>
-              <a href="" @click="" class="a_biaoqian">没有账号？ 立即注册</a>
+              <a href="" @click="openAddUser" class="a_biaoqian">没有账号？ 立即注册</a>
             </el-form-item>
 
             <el-form-item class="other_login_box">
@@ -146,12 +146,62 @@
         违法和不良信息举报：010-82716601</span
       >
   </div>
+
+
+  <!--新增界面-->
+  <el-dialog
+    title="用户注册"
+    :visible.sync="dialogVisible"
+    :modal-append-to-body='false'
+    width="30%"
+    :close-on-click-modal="false"
+  >
+    <el-form
+      :model="addLoginInfo"
+      :rules="loginRules"
+      ref="AddFormRef"
+      label-width="0px"
+      v-loading="AddLoading"
+    >
+      <el-form-item prop="nickName">
+        <el-input
+          type="text"
+          v-model="addLoginInfo.nickName"
+          auto-complete="off"
+          placeholder="用户名"
+          maxlength="20"
+        ></el-input>
+      </el-form-item>
+      <el-form-item prop="mobile">
+        <el-input
+          type="text"
+          v-model="addLoginInfo.mobile"
+          auto-complete="off"
+          placeholder="手机号"
+          maxlength="11"
+        ></el-input>
+      </el-form-item>
+      <el-form-item prop="password">
+        <el-input
+          type="password"
+          v-model="addLoginInfo.password"
+          auto-complete="off"
+          placeholder="密码"
+          maxlength="21"
+        ></el-input>
+      </el-form-item>
+      <el-form-item class="add_button">
+        <el-button size="medium" type="info" @click="closedialogVisible" round>取消</el-button>
+        <el-button size="medium" type="success" round @click="addUser">确定</el-button>
+      </el-form-item>
+    </el-form>
+  </el-dialog>
 </div>
 
 </template>
 <script>
 // 引入api.js  好调用里面的接口
-import { requestLogin, setVfCode } from '../api/api'
+import {requestLogin, setVfCode} from '../api/api'
     export default {
     name: 'login',
     data() {
@@ -167,6 +217,8 @@ import { requestLogin, setVfCode } from '../api/api'
             vfCode: '',
             password: ''
         },
+        dialogVisible: false, //注册页面 默认关闭
+        AddLoading: false,
         LoginLoading: false,
         table1show: true,
         table2show: false,
@@ -250,6 +302,19 @@ import { requestLogin, setVfCode } from '../api/api'
         // 清除cookie
         clearCookie: function () {
             this.setCookie('', '', -1) // 修改两个值都为空，天数为-1天就好了
+        },
+        // 关闭用户注册框
+        closedialogVisible () {
+            this.resetAddFrom()
+            this.dialogVisible = false
+        },
+        // 打开用户注册弹窗
+        openAddUser(){
+            this.dialogVisible = true
+        },
+        // 重置用户注册表单
+        resetAddFrom () {
+            this.$refs.AddFormRef.resetFields()
         },
         // 登录方式切换
         changeVFLogin () {
@@ -362,6 +427,10 @@ import { requestLogin, setVfCode } from '../api/api'
                 }
             })
         },
+        // 用户注册
+        addUser () {
+
+        }
     }
     };
 </script>
