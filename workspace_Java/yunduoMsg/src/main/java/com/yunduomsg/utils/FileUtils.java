@@ -30,6 +30,8 @@ public class FileUtils {
             StringBuffer sb = new StringBuffer();
             String FileText = null;
             while ((FileText = bufferedReader.readLine()) != null){
+                // 增加换行符标志
+                FileText+='\n';
                 sb.append(FileText);
             }
             StringText = sb.toString();

@@ -89,7 +89,7 @@
 
             <el-form-item class="el_form_item_rem">
               <el-checkbox v-model="checked" size="mini" class="rem_username">记住账号</el-checkbox>
-              <a href="" @click="openAddUser" class="a_biaoqian">没有账号？ 立即注册</a>
+              <a @click="openAddUser" class="a_biaoqian">没有账号？ 立即注册</a>
             </el-form-item>
 
             <el-form-item class="other_login_box">
@@ -126,7 +126,7 @@
 
   <div class="footer">
     <span>© 2020 欣酋科技 · </span>
-    <a href="https://tsm.miit.gov.cn/dxxzsp/">京 ICP 证 394309 号 · </a>
+    <a href="https://tsm.miit.gov.cn/dxxzsp/">汝 ICP 证 394309 号 · </a>
     <a
       href="http://www.beian.gov.cn/portal/registerSystemInfo?recordcode=11010802020088"
     >
@@ -134,16 +134,16 @@
         alt=""
         src="https://pic3.zhimg.com/80/v2-d0289dc0a46fc5b15b3363ffa78cf6c7.png"
       />
-      京公网安备 11010802010012 号 ·
+      汝公网安备 11010802020012 号 ·
     </a>
     <a href="https://zhstatic.zhihu.com/assets/zhihu/publish-license.jpg">
-      出版物经营许可证
+      干饭王经营许可证
     </a>
   </div>
   <div class="footer2">
       <span
-      >侵权举报 · 网上有害信息举报专区 · 儿童色情信息举报专区 ·
-        违法和不良信息举报：010-82716601</span
+      >侵权举报 · 网上吃饭点餐举报专区 · 落叶的位置 ·
+        违法和不良饭店举报：010-82716601</span
       >
   </div>
 
@@ -158,7 +158,7 @@
   >
     <el-form
       :model="addLoginInfo"
-      :rules="loginRules"
+      :rules="addRules"
       ref="AddFormRef"
       label-width="0px"
       v-loading="AddLoading"
@@ -188,6 +188,17 @@
           auto-complete="off"
           placeholder="密码"
           maxlength="21"
+          show-password
+        ></el-input>
+      </el-form-item>
+      <el-form-item prop="checkPassword">
+        <el-input
+          type="password"
+          v-model="addLoginInfo.checkPassword"
+          auto-complete="off"
+          placeholder="重复密码"
+          maxlength="21"
+          show-password
         ></el-input>
       </el-form-item>
       <el-form-item class="add_button">
@@ -205,6 +216,33 @@ import {requestLogin, setVfCode} from '../api/api'
     export default {
     name: 'login',
     data() {
+        // 密码验证
+        const pwdCheck = async(rule, value, callback) => {
+            // let reg = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[~@#$%\*-\+=:,\\?\[\]\{}]).{6,16}$/
+            if (value.length < 6) {
+                this.changeFlag = 2;
+                return callback(new Error('密码不能少于6位！'));
+            } else if (value.length > 16) {
+                this.changeFlag = 2;
+                return callback(new Error('密码最长不能超过16位！'));
+            } else {
+                this.changeFlag = 1;
+                callback()
+            }
+        }
+        // 重复密码验证
+        const pwdAgainCheck = async(rule, value, callback) => {
+            if (value.length < 1) {
+                this.changeAgainFlag = 2;
+                return callback(new Error('重复密码不能为空！'));
+            } else if(this.addLoginInfo.password != this.addLoginInfo.checkPassword){
+                this.changeAgainFlag = 2;
+                return callback(new Error('两次输入密码不一致！'));
+            }else{
+                this.changeAgainFlag = 1;
+                callback()
+            }
+        };
     return {
         loginInfo: {
             mobile: '',
@@ -215,8 +253,12 @@ import {requestLogin, setVfCode} from '../api/api'
             mobile: '',
             nickName: '',
             vfCode: '',
-            password: ''
+            password: '',
+            checkPassword: ''
         },
+        changeFlag: 0,
+        changeAgainFlag: 0,
+        checked: false,
         dialogVisible: false, //注册页面 默认关闭
         AddLoading: false,
         LoginLoading: false,
@@ -224,6 +266,32 @@ import {requestLogin, setVfCode} from '../api/api'
         table2show: false,
         isDisabled: false, // 控制按钮是否可以点击（false:可以点击，true:不可点击）
         content: '获取验证码', // 发送验证码按钮的初始显示文字
+        addRules: {
+            nickName: [{
+                required: true,
+                message: '请输入用户名',
+                trigger: 'blur'
+            }
+            ],
+            mobile: [
+                {
+                    required: true,
+                    message: '请输入手机号',
+                    trigger: 'blur'
+                },
+                {
+                    pattern: /^1[34578]\d{9}$/,
+                    message: '请输入正确的手机号',
+                    trigger: 'blur'
+                }
+            ],
+            password: [
+                { required: true, validator: pwdCheck, trigger: 'blur' }
+            ],
+            checkPassword: [
+                { required: true, validator: pwdAgainCheck, trigger: 'blur' }
+            ]
+        },
         loginRules: {
             nickName: [{
                 required: true,
@@ -252,6 +320,14 @@ import {requestLogin, setVfCode} from '../api/api'
                 { min: 6, max: 6, message: '请输入6位短信验证码', trigger: 'blur' }
             ],
             password: [
+                {
+                    required: true,
+                    message: '请输入密码',
+                    trigger: 'blur'
+                },
+                { min: 8, max: 21, message: '请输入正确的密码', trigger: 'blur' }
+            ],
+            checkPassword: [
                 {
                     required: true,
                     message: '请输入密码',
@@ -429,7 +505,29 @@ import {requestLogin, setVfCode} from '../api/api'
         },
         // 用户注册
         addUser () {
-
+            this.$refs.AddFormRef.validate(valid => {
+                if (valid) {
+                    // 如果验证通过 提交
+                    this.AddLoading = true
+                    // 调用方法
+                    addUser(this.addLoginInfo).then(data => {
+                        if (data.code === 200) {
+                            this.AddLoading = false
+                            this.dialogVisible = false
+                            this.$message({
+                                message: data.msg,
+                                type: 'success'
+                            })
+                        } else {
+                            this.AddLoading = false
+                            this.$message({
+                                message: data.msg,
+                                type: 'error'
+                            })
+                        }
+                    })
+                }
+            })
         }
     }
     };
@@ -491,6 +589,7 @@ import {requestLogin, setVfCode} from '../api/api'
   .a_biaoqian{
     text-decoration:none;
     padding-left: 150px;
+    cursor: pointer;
   }
   .rem_username{
     padding-left: 3px;
