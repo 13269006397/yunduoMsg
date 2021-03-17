@@ -1,5 +1,7 @@
 package com.xinqiu.order.controller;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
@@ -9,6 +11,9 @@ import java.util.List;
 @RestController
 @RequestMapping("/order")
 public class orderController {
+
+    private static final Logger logger = (Logger) LoggerFactory.getLogger(orderController.class);
+
 
 
     @RequestMapping("/getGoodsByUserId")

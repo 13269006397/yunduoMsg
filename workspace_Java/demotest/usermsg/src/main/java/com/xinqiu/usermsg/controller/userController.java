@@ -1,5 +1,7 @@
 package com.xinqiu.usermsg.controller;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
@@ -14,8 +16,13 @@ import java.util.List;
 @RequestMapping("/user")
 public class userController {
 
+    private static final Logger logger = (Logger) LoggerFactory.getLogger(userController.class);
+
+
     @RequestMapping("/")
     public String getHello() {
+
+        logger.info("用户模块启动");
         return "hello";
     }
 
