@@ -2,6 +2,7 @@ package com.xinqiu.order.controller;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
@@ -13,6 +14,9 @@ import java.util.List;
 public class orderController {
 
     private static final Logger logger = (Logger) LoggerFactory.getLogger(orderController.class);
+
+    @Autowired
+    private RestTemplate restTemplate;
 
 
 
@@ -26,10 +30,10 @@ public class orderController {
     // order模块获取用户信息 restTemplate 远程调用
     @RequestMapping("/getUserbyOrder")
     List getUserbyOrder(){
-
-        //请求地址
-        String url = "http://localhost:8081/user/findAllUser/";
-        RestTemplate restTemplate = new RestTemplate();
+        // 请求地址
+        // String url = "http://localhost:8081/user/findAllUser/";
+        // naCos地址
+        String url = "http://user-service/user/findAllUser/";
         List userList = restTemplate.getForObject(url, List.class);
         return userList;
 
